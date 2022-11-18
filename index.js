@@ -22,7 +22,9 @@ const start = async () => {
 start();
 
 // Create a new user
-app.post("/register", async (req, res) => {
+//app.post("/register", async (req, res) 
+const createNewUser = async (req, res) => 
+{
   const { firstname, lastname, email, password, confirmPassword, telephone } =
     req.body;
 
@@ -66,10 +68,12 @@ app.post("/register", async (req, res) => {
       error: error.message,
     });
   }
-});
+};
 
 // Login with email and password
-app.post("/login", async (req, res) => {
+//app.post("/login", async (req, res) 
+const loginByMailAndPassword = async (req, res) => 
+{
   const { email, password } = req.body;
   const user = await User.findOne({
     email,
@@ -104,28 +108,34 @@ app.post("/login", async (req, res) => {
     status: "error",
     error: "email ou password incorrect, essayer encore",
   });
-});
+};
 
 // Get user info by email
-app.get("/mail/:mail", async (req, res) => {
+//app.get("/mail/:mail", async (req, res) 
+const getUserByEmail = async (req, res) => 
+{
   var params = req.params;
 
   const users = await User.find({ mail: params.mail }).select("-__v");
 
   return res.status(200).json({ error: false, users });
-});
+};
 
 // Get all users by firstname
-app.get("/prenom/:prenom", async (req, res) => {
+//app.get("/prenom/:prenom", async (req, res) 
+const getUserByFirstname = async (req, res) =>
+ {
   var params = req.params;
 
   const users = await User.find({ prenom: params.prenom });
 
   return res.status(200).json({ error: false, users });
-});
+};
 
 // Get all users by name
-app.get("/nom/:nom", async (req, res) => {
+//app.get("/nom/:nom", async (req, res) => 
+const getUserByName = async (req, res) =>
+{
   var params = req.params;
 
   const users = await User.find({ nom: params.nom }).select("-__v");
@@ -137,10 +147,10 @@ app.get("/nom/:nom", async (req, res) => {
   }
  */
   return res.status(200).json({ error: false, users });
-});
+};
 
 // Get all users
-app.get("/profile", async function (req, res) {
+const getAllUsers = async (req, res) =>{
   try {
     const jwtstatus = checkJWT(req.headers.authorization);
     if (jwtstatus.status) {
@@ -156,7 +166,7 @@ app.get("/profile", async function (req, res) {
   } catch (error) {
     res.status(500).json(error);
   }
-});
+};
 
 // Check jwt validity
 function checkJWT(full_token) {
@@ -185,7 +195,7 @@ function checkJWT(full_token) {
 }
 
 // edit user info
-app.put("/modifier", async function (req, res) {
+const updateInfo = async (req, res) =>{
   try {
     const jwtstatus = checkJWT(req.headers.authorization);
     if (jwtstatus.status) {
@@ -213,10 +223,10 @@ app.put("/modifier", async function (req, res) {
   } catch (error) {
     res.status(500).json(error);
   }
-});
+};
 
 // edit user by password
-app.put("/password", async function (req, res) {
+const updateByPassword = async (req, res) => {
   try {
     const jwtstatus = checkJWT(req.headers.authorization);
     if (jwtstatus.status) {
@@ -247,10 +257,10 @@ app.put("/password", async function (req, res) {
   } catch (error) {
     res.status(500).json(error);
   }
-});
+};
 
 // edit user by phone
-app.put("/telephone", async function (req, res) {
+const updateByPhone = async (req, res) => {
   try {
     const jwtstatus = checkJWT(req.headers.authorization);
     if (jwtstatus.status) {
@@ -261,7 +271,7 @@ app.put("/telephone", async function (req, res) {
         user.telephone = req.body.telephone;
         user.save();
         res.status(201).json(user);
-        message: "Numéro de téléphone modifié";
+        msg: "Numéro de téléphone modifié";
       } else {
         res.status(404).json({
           message: "utilisateur non trouvé",
@@ -275,10 +285,10 @@ app.put("/telephone", async function (req, res) {
   } catch (error) {
     res.status(500).json(error);
   }
-});
+};
 
 // edit user by email
-app.put("/email", async function (req, res) {
+const updateByEmail = async (req, res) => {
   try {
     const jwtstatus = checkJWT(req.headers.authorization);
     if (jwtstatus.status) {
@@ -303,10 +313,10 @@ app.put("/email", async function (req, res) {
   } catch (error) {
     res.status(500).json(error);
   }
-});
+};
 
 //delete user
-app.delete("/supprimer", async function (req, res) {
+const deleteUser = async (req, res) => {
   const jwtstatus = checkJWT(req.headers.authorization);
   if (jwtstatus.status) {
     const user = await User.findOne({
@@ -327,10 +337,10 @@ app.delete("/supprimer", async function (req, res) {
       });
     }
   }
-});
+};
 
 //logout utilisatuer inspired by https://stackoverflow.com/questions/3521290/logout-get-or-post
-app.post("/logout", async function (req, res) {
+const logout = async (req, res) =>{
   try {
     const jwtstatus = checkJWT(req.headers.authorization);
     if (jwtstatus.status) {
@@ -370,4 +380,21 @@ app.post("/logout", async function (req, res) {
   } catch (error) {
     res.status(500).json(error);
   }
-});
+};
+
+
+//exporter le module
+module.exports = {
+  createNewUser,
+  loginByMailAndPassword,
+  getUserByEmail,
+  getUserByFirstname,
+  getUserByName,
+  getAllUsers,
+  updateInfo,
+  updateByPassword,
+  updateByPhone,
+  updateByEmail,
+  deleteUser,
+  logout
+};
